@@ -8,7 +8,8 @@
 4. [Installation](#installation)
 5. [Usage](#usage)
 6. [Output](#output)
-7. [License](#license)
+7. [Future plans](#future-plans)
+8. [License](#license)
 
 ## Overview
 
@@ -76,6 +77,27 @@ The script generates **.xlsx** files for each sample as weel as two separate plo
 **Transmittance Plot**: Displays the average transmittance of each sample as a function of wavelength, with shaded error bars representing the standard deviation.
 
 **Haze Plot**: Displays the average haze of each sample as a function of wavelength, also with shaded error bars for standard deviation.
+
+## Future Plans
+
+The Transmittance and Haze Analyzer is an evolving project, and I am committed to enhancing its capabilities and user experience. Here are some of the developments I have in mind for future versions:
+
+### Enhanced User Interface
+- **Improved GUI**: I plan to refine the graphical user interface, making it more intuitive, visually appealing, and user-friendly. This includes better layout designs, more responsive controls, and a cohesive color scheme.
+
+### Expanded Control Features
+- **Additional Widgets**: To offer more control and flexibility, new widgets and interactive elements will be added to the control panel. These enhancements aim to provide users with a more comprehensive set of tools for data manipulation and visualization.
+
+### Advanced Shading Area Controls
+- **Control Panel-Managed Shading**: In future updates, users will be able to manage the shaded error areas directly from the control panel. This feature will allow for more dynamic interaction with the plots, offering a better understanding of the data variance.
+
+### Versatile Plotting Options
+- **Conditional Transmittance Plotting**: The software will be able to handle scenarios where haze data (T3 and T4 measurements) is unavailable. In such cases, it will automatically default to plotting only the transmittance data, ensuring continued functionality and flexibility.
+
+### Compatibility with Various Spectroscopes
+- **Support for Additional Spectroscopes**: Plans include adapting the software to be compatible with other spectroscope models and types. This expansion will cater to a broader range of users, accommodating different hardware preferences and requirements.
+
+These updates will not only enhance the current functionalities but also make the tool more versatile and user-friendly. I am always open to suggestions and contributions from the community to make the Transmittance and Haze Analyzer a more robust and comprehensive tool.
 
 ## License
 

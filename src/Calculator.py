@@ -4,6 +4,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 from numpy import ndarray
+from tqdm import tqdm
 
 from src.Save_results_img import SavePlotsImg
 
@@ -19,7 +20,8 @@ class ProcessSpectroscopyData:
         Process each sample in self.data_folders and perform calculations.
         """
 
-        for sample_name, paths in self.data.items():
+        for sample_name in tqdm(self.data.keys(), desc="Processing Samples", colour='blue'):
+            paths = self.data[sample_name]
             # Load data for T1 and T3, splitting into wavelengths and measurements
             t1 = pd.read_csv(paths['t1'], sep=",", header=1).values.ravel()
             t3 = pd.read_csv(paths['t3'], sep=",", header=1).values.ravel()

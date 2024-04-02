@@ -5,12 +5,14 @@ from tkinter import messagebox
 from typing import Dict
 
 import customtkinter as ctk
+from icecream import ic
 from natsort import natsorted
 
 from src.Helpers import pick_the_last_one, find_all_matches
 from src.settings import SETTINGS
 from src.Calculator import ProcessSpectroscopyData
 from src.PLot_spectroscopy_data import TransmittanceAndHazePlotter
+from src.Save_results_into_single_xlsx import SaveIntoSingleExcel
 
 
 class InitialWindow(ctk.CTk):
@@ -31,10 +33,12 @@ class InitialWindow(ctk.CTk):
         self.data_folders = {}
         self.file_naming = file_naming
         self.title("Open File")
-        self.geometry("300x250")
+        self.geometry("310x280")
         self.folders_to_show = {}  # This will be a dictionary to keep track of the counts
         self.save_images_flag = False
         self.save_xlsx_flag = False
+        self.save_all_flag = False
+        self.add_sample_name_row_flag = False
         self._setup_ui()
 
     def _setup_ui(self):
@@ -44,9 +48,9 @@ class InitialWindow(ctk.CTk):
 
         # Checkboxes for saving options
         self.save_images_checkbox = ctk.CTkCheckBox(self, text="Save plots as png",
-                                                    command=self.toggle_image_options)
+                                                    command=self.toggle_option_widgets)
         self.save_images_checkbox.grid(row=1, column=0, pady=10)
-        self.save_xlsx_checkbox = ctk.CTkCheckBox(self, text="Save xlsx",
+        self.save_xlsx_checkbox = ctk.CTkCheckBox(self, text="Save xlsx's",
                                                   command=lambda: self.flag_setter_checkboxes('save_xlsx'))
         self.save_xlsx_checkbox.grid(row=1, column=1, pady=10)
 
@@ -76,7 +80,20 @@ class InitialWindow(ctk.CTk):
         self.image_format_option_menu.grid(row=5, column=0, columnspan=2, pady=(0, 10))
         self.image_height_entry.bind("<KeyRelease>", self.validate_numeric_entry)
 
-    def validate_numeric_entry(self, event):
+        # Save all in one Excel
+        self.save_all_in_one_checkbox = ctk.CTkCheckBox(self, text="Save all data in one",
+                                                        command=lambda: self.flag_setter_checkboxes('Save_all'))
+        self.save_all_in_one_checkbox.grid(row=6, column=0, pady=(0, 10), padx=5)
+
+        self.add_sample_name_row_checkbox = ctk.CTkCheckBox(self, text="Sample name row",
+                                                            command=lambda:
+                                                            self.flag_setter_checkboxes('Add_sample_name'))
+        self.add_sample_name_row_checkbox.grid(row=6, column=1, pady=(0, 10), padx=5)
+        self.add_sample_name_row_checkbox.toggle()
+        self.add_sample_name_row_checkbox.configure(state='disabled')
+
+    @staticmethod
+    def validate_numeric_entry(event):
         """Validate the entry to allow only numeric input."""
         entry_widget = event.widget
         if entry_widget.get() and not entry_widget.get().replace('.', '', 1).isdigit():
@@ -88,7 +105,7 @@ class InitialWindow(ctk.CTk):
             # If the input is valid, store the current value as the last valid value.
             entry_widget.last_valid_value = entry_widget.get()
 
-    def toggle_image_options(self):
+    def toggle_option_widgets(self):
         self.flag_setter_checkboxes('save_images')
         state = 'normal' if self.save_images_flag else 'disabled'
         self.image_width_entry.configure(state=state)
@@ -112,12 +129,13 @@ class InitialWindow(ctk.CTk):
             else:
                 self.folders_to_show[self.root_folder_name] = 1  # Initialize the counter
 
-            # self.state('iconic')
+            self.state('iconic')
 
             self.proceed_each_folder()
             self.process_and_sort_data_folders()
             data_calculator = ProcessSpectroscopyData(self)
             data_calculator.process_samples()
+            SaveIntoSingleExcel(self)
             TransmittanceAndHazePlotter(self, 'Transmittance')
             TransmittanceAndHazePlotter(self, 'Haze')
 
@@ -219,3 +237,9 @@ class InitialWindow(ctk.CTk):
             self.save_images_flag = bool(self.save_images_checkbox.get())
         if which_checkbox == 'save_xlsx':
             self.save_xlsx_flag = bool(self.save_xlsx_checkbox.get())
+        if which_checkbox == 'Save_all':
+            self.save_all_flag = bool(self.save_all_in_one_checkbox.get())
+            state_xlsx = 'normal' if self.save_all_flag else 'disabled'
+            self.add_sample_name_row_checkbox.configure(state=state_xlsx)
+        if which_checkbox == 'Add_sample_name':
+            self.add_sample_name_row_flag = bool(self.add_sample_name_row_checkbox.get())
