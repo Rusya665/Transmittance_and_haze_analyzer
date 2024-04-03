@@ -33,7 +33,8 @@ class InitialWindow(ctk.CTk):
         self.data_folders = {}
         self.file_naming = file_naming
         self.title("Open File")
-        self.geometry("310x280")
+        self.geometry("310x430")
+        self.minsize(310, 430)
         self.folders_to_show = {}  # This will be a dictionary to keep track of the counts
         self.save_images_flag = False
         self.save_xlsx_flag = False
@@ -62,6 +63,7 @@ class InitialWindow(ctk.CTk):
         self.image_width_entry.insert(0, '16')
         self.image_width_entry.last_valid_value = '16'  # Set default last valid value
         self.image_width_entry.configure(state='disabled')
+        self.image_width_entry.bind("<KeyRelease>", self.validate_numeric_entry)
 
         self.label_image_height = ctk.CTkLabel(self, text="Image Height in cm:")
         self.label_image_height.grid(row=2, column=1, pady=(0, 5))
@@ -70,25 +72,62 @@ class InitialWindow(ctk.CTk):
         self.image_height_entry.insert(0, '12')
         self.image_height_entry.last_valid_value = '12'  # Set default last valid value
         self.image_height_entry.configure(state='disabled')
+        self.image_height_entry.bind("<KeyRelease>", self.validate_numeric_entry)
 
-        self.image_width_entry.bind("<KeyRelease>", self.validate_numeric_entry)
+        # X-axis settings label and entry
+        self.label_x_min = ctk.CTkLabel(self, text="X-axis Min:")
+        self.label_x_min.grid(row=4, column=0, pady=(0, 5))
+        self.entry_x_min = ctk.CTkEntry(self, placeholder_text="200")
+        self.entry_x_min.grid(row=5, column=0, pady=(0, 10))
+        self.entry_x_min.insert(0, '200')
+        self.entry_x_min.last_valid_value = '200'  # Set default last valid value
+        self.entry_x_min.configure(state='disabled')
+        self.entry_x_min.bind("<KeyRelease>", self.validate_numeric_entry)
+
+        self.label_x_max = ctk.CTkLabel(self, text="X-axis Max:")
+        self.label_x_max.grid(row=4, column=1, pady=(0, 5))
+        self.entry_x_max = ctk.CTkEntry(self, placeholder_text="1100")
+        self.entry_x_max.grid(row=5, column=1, pady=(0, 10))
+        self.entry_x_max.insert(0, '1100')
+        self.entry_x_max.last_valid_value = '1100'  # Set default last valid value
+        self.entry_x_max.configure(state='disabled')
+        self.entry_x_max.bind("<KeyRelease>", self.validate_numeric_entry)
+
+        # Y-axis settings label and entry
+        self.label_y_min = ctk.CTkLabel(self, text="Y-axis Min:")
+        self.label_y_min.grid(row=6, column=0, pady=(0, 5))
+        self.entry_y_min = ctk.CTkEntry(self, placeholder_text="e.g., 0")
+        self.entry_y_min.grid(row=7, column=0, pady=(0, 10))
+        self.entry_y_min.insert(0, '0')
+        self.entry_y_min.last_valid_value = '0'  # Set default last valid value
+        self.entry_y_min.configure(state='disabled')
+        self.entry_y_min.bind("<KeyRelease>", self.validate_numeric_entry)
+
+        self.label_y_max = ctk.CTkLabel(self, text="Y-axis Max:")
+        self.label_y_max.grid(row=6, column=1, pady=(0, 5))
+        self.entry_y_max = ctk.CTkEntry(self, placeholder_text="e.g., 100")
+        self.entry_y_max.grid(row=7, column=1, pady=(0, 10))
+        self.entry_y_max.insert(0, '100')
+        self.entry_y_max.last_valid_value = '100'  # Set default last valid value
+        self.entry_y_max.configure(state='disabled')
+        self.entry_y_max.bind("<KeyRelease>", self.validate_numeric_entry)
 
         # Label and Dropdown for image format, initially disabled
         self.label_image_format = ctk.CTkLabel(self, text="Image Format:")
-        self.label_image_format.grid(row=4, column=0, columnspan=2, pady=(0, 5))
+        self.label_image_format.grid(row=8, column=0, columnspan=2, pady=(0, 5))
         self.image_format_option_menu = ctk.CTkOptionMenu(self, values=["png", "jpg", "jpeg", "tiff"], state='disabled')
-        self.image_format_option_menu.grid(row=5, column=0, columnspan=2, pady=(0, 10))
-        self.image_height_entry.bind("<KeyRelease>", self.validate_numeric_entry)
+        self.image_format_option_menu.grid(row=9, column=0, columnspan=2, pady=(0, 10))
+
 
         # Save all in one Excel
         self.save_all_in_one_checkbox = ctk.CTkCheckBox(self, text="Save all data in one",
                                                         command=lambda: self.flag_setter_checkboxes('Save_all'))
-        self.save_all_in_one_checkbox.grid(row=6, column=0, pady=(0, 10), padx=5)
+        self.save_all_in_one_checkbox.grid(row=10, column=0, pady=(0, 10), padx=5)
 
         self.add_sample_name_row_checkbox = ctk.CTkCheckBox(self, text="Sample name row",
                                                             command=lambda:
                                                             self.flag_setter_checkboxes('Add_sample_name'))
-        self.add_sample_name_row_checkbox.grid(row=6, column=1, pady=(0, 10), padx=5)
+        self.add_sample_name_row_checkbox.grid(row=10, column=1, pady=(0, 10), padx=5)
         self.add_sample_name_row_checkbox.toggle()
         self.add_sample_name_row_checkbox.configure(state='disabled')
 
@@ -111,6 +150,10 @@ class InitialWindow(ctk.CTk):
         self.image_width_entry.configure(state=state)
         self.image_height_entry.configure(state=state)
         self.image_format_option_menu.configure(state=state)
+        self.entry_x_min.configure(state=state)
+        self.entry_x_max.configure(state=state)
+        self.entry_y_min.configure(state=state)
+        self.entry_y_max.configure(state=state)
 
     def open_folder(self) -> None:
         """
