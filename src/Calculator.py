@@ -61,8 +61,6 @@ class ProcessSpectroscopyData:
         The transmittance metrics are calculated as follows:
         - Transmittance Average (Transmittance_Avg):
             100 * (average of t2 values / t1)
-        - Transmittance Variance (Transmittance_Var):
-            variance of t2 values
         - Transmittance Standard Deviation (Transmittance_Std_Dev):
             standard deviation of t2 values
 
@@ -72,37 +70,30 @@ class ProcessSpectroscopyData:
         After obtaining haze calculations for each area, the following aggregate metrics are computed:
         - Haze Average (Haze_Avg):
             average of haze values across all measurement areas
-        - Haze Variance (Haze_Var):
-            variance of haze values across all measurement areas
         - Haze Standard Deviation (Haze_Std_Dev):
             standard deviation of haze values across all measurement areas
         """
         # Calculate transmittance metrics for each measurement area
-        # transmittance_calculations_per_area = [100 * (t2[:, area_index] / t1)
-        #                                        for area_index in range(num_measurement_areas)]
-
-        # transmittance_avg_per_area = np.average(np.vstack(transmittance_calculations_per_area), axis=0)
-        # transmittance_var_per_area = np.var(np.vstack(transmittance_calculations_per_area), axis=0)
-        # transmittance_std_dev_per_area = np.std(np.vstack(transmittance_calculations_per_area), axis=0)
-
-        transmittance_avg_per_area = np.average(t2, axis=1)
-        transmittance_var_per_area = np.var(t2, axis=1)
-        transmittance_std_dev_per_area = np.std(t2, axis=1)
+        transmittance_calculations_per_area = [100 * (t2[:, area_index] / t1)
+                                               for area_index in range(num_measurement_areas)]
+        #
+        transmittance_avg_per_area = np.average(np.vstack(transmittance_calculations_per_area), axis=0)
+        transmittance_std_dev_per_area = np.std(np.vstack(transmittance_calculations_per_area), axis=0)
+        #
+        # transmittance_avg_per_area = np.average(t2, axis=1)
+        # transmittance_std_dev_per_area = np.std(t2, axis=1)
 
         # Iterate through each measurement area and calculate haze
         haze_calculations_per_area = [100 * (t4[:, area_index] / t2[:, area_index] - t3 / t1) for area_index in
                                       range(num_measurement_areas)]
         # Calculate average, variance, and standard deviation for haze across all areas
         aggregate_haze_avg = np.average(np.vstack(haze_calculations_per_area), axis=0)
-        aggregate_haze_variance = np.var(np.vstack(haze_calculations_per_area), axis=0)
         aggregate_haze_std_dev = np.std(np.vstack(haze_calculations_per_area), axis=0)
 
         # Store the results in the class data attribute
         self.data[sample_name]['Transmittance_Avg'] = transmittance_avg_per_area
-        self.data[sample_name]['Transmittance_Var'] = transmittance_var_per_area
         self.data[sample_name]['Transmittance_Std_Dev'] = transmittance_std_dev_per_area
         self.data[sample_name]['Haze_Avg'] = aggregate_haze_avg
-        self.data[sample_name]['Haze_Var'] = aggregate_haze_variance
         self.data[sample_name]['Haze_Std_Dev'] = aggregate_haze_std_dev
 
     def save_results_xlsx(self, sample_name: str) -> None:
@@ -118,10 +109,8 @@ class ProcessSpectroscopyData:
         df = pd.DataFrame({
             "Wavelength": metrics['Wavelength'],
             "Transmittance_Avg": metrics['Transmittance_Avg'],
-            "Transmittance_Var": metrics['Transmittance_Var'],
             "Transmittance_Std_Dev": metrics['Transmittance_Std_Dev'],
             "Haze_Avg": metrics['Haze_Avg'],
-            "Haze_Var": metrics['Haze_Var'],
             "Haze_Std_Dev": metrics['Haze_Std_Dev']
         })
 
