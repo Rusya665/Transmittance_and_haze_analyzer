@@ -14,13 +14,14 @@ class ControlPanel(ctk.CTkToplevel):
 
     :param plotter: An instance of the TransmittancePlotter class to control.
     :param file_name: The name of the file being analyzed.
+    :param plot_type: Which spectroscopy data to plot (transmittance or haze).
     """
 
-    def __init__(self, plotter, file_name: str):
+    def __init__(self, plotter, file_name: str, plot_type: str):
         super().__init__()
         self.file_name = file_name
         self.plotter = plotter
-        self.title(f"{self.file_name} Transmittance Data Control Panel")
+        self.title(f"{self.file_name} {plot_type} Data Control Panel")
         self.geometry("1090x750")
         self.main_scrollable_frame = ctk.CTkScrollableFrame(self, width=1090, height=750, orientation="horizontal")
         self.main_scrollable_frame.pack()
@@ -328,7 +329,3 @@ class ControlPanel(ctk.CTkToplevel):
             self.plotter.zoom_to_x(x_min, x_max)
         except ValueError:
             pass
-
-    def run_control_panel(self) -> None:
-        """ Runs the control panel event loop. This should be called to start the control panel application. """
-        self.mainloop()

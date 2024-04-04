@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib.ticker import AutoMinorLocator
 
-
 from src.Control_panel import ControlPanel
 
 
@@ -11,7 +10,7 @@ class TransmittanceAndHazePlotter:
     A class to plot transmittance and haze data using matplotlib.
 
     :param parent: Parental class containing all necessary sorted and prepared data to plot.
-    :param plot_type: Which spectroscopy data to plot.
+    :param plot_type: Which spectroscopy data to plot (transmittance or haze).
     """
 
     def __init__(self, parent, plot_type: str):
@@ -57,8 +56,7 @@ class TransmittanceAndHazePlotter:
         plt.gca().xaxis.set_minor_locator(AutoMinorLocator(n=2))
         plt.gca().yaxis.set_minor_locator(AutoMinorLocator(n=2))
         plt.show(block=False)
-        self.control_panel = ControlPanel(self, self.window_name)
-        # self.control_panel.run_control_panel()
+        self.control_panel = ControlPanel(self, self.window_name, self.plot_type)
 
     def _plot_initial_data(self) -> None:
         """ Plot the initial data based on plot_type. """

@@ -5,14 +5,13 @@ from tkinter import messagebox
 from typing import Dict
 
 import customtkinter as ctk
-from icecream import ic
 from natsort import natsorted
 
-from src.Helpers import pick_the_last_one, find_all_matches
-from src.settings import SETTINGS
 from src.Calculator import ProcessSpectroscopyData
+from src.Helpers import pick_the_last_one, find_all_matches
 from src.PLot_spectroscopy_data import TransmittanceAndHazePlotter
 from src.Save_results_into_single_xlsx import SaveIntoSingleExcel
+from src.settings import SETTINGS
 
 
 class InitialWindow(ctk.CTk):
@@ -118,7 +117,6 @@ class InitialWindow(ctk.CTk):
         self.image_format_option_menu = ctk.CTkOptionMenu(self, values=["png", "jpg", "jpeg", "tiff"], state='disabled')
         self.image_format_option_menu.grid(row=9, column=0, columnspan=2, pady=(0, 10))
 
-
         # Save all in one Excel
         self.save_all_in_one_checkbox = ctk.CTkCheckBox(self, text="Save all data in one",
                                                         command=lambda: self.flag_setter_checkboxes('Save_all'))
@@ -133,16 +131,23 @@ class InitialWindow(ctk.CTk):
 
     @staticmethod
     def validate_numeric_entry(event):
-        """Validate the entry to allow only numeric input."""
+        """Validate the entry to allow only numeric input, including negative values."""
         entry_widget = event.widget
-        if entry_widget.get() and not entry_widget.get().replace('.', '', 1).isdigit():
-            # If the current value isn't empty and it's not numeric (allowing one decimal point),
-            # reset the text to the last valid value.
+        text = entry_widget.get()
+
+        # Allow negative numbers and numbers with a single decimal point
+        if text and not (text.replace('.', '', 1).isdigit() or
+                         (text.startswith('-') and text[1:].replace('.', '', 1).isdigit())):
+            # If the current value isn't empty, it's not numeric, and it's not a negative number
+            # (allowing one decimal point), reset the text to the last valid value.
             entry_widget.delete(0, 'end')  # Remove current text
-            entry_widget.insert(0, event.widget.last_valid_value)  # Insert last valid value
+            try:
+                entry_widget.insert(0, entry_widget.last_valid_value)  # Insert last valid value
+            except AttributeError:
+                pass
         else:
             # If the input is valid, store the current value as the last valid value.
-            entry_widget.last_valid_value = entry_widget.get()
+            entry_widget.last_valid_value = text
 
     def toggle_option_widgets(self):
         self.flag_setter_checkboxes('save_images')
@@ -244,14 +249,14 @@ class InitialWindow(ctk.CTk):
 
     def process_and_sort_data_folders(self):
         """
-               Processes and sorts the data folders.
+        Processes and sorts the data folders.
 
-               Removes any entries where:
-               - Any of t1, t2, t3, or t4 data is missing (None or empty).
-               - The number of T2 and T4 files does not match.
+        Removes any entries where:
+        - Any of t1, t2, t3, or t4 data is missing (None or empty).
+        - The number of T2 and T4 files does not match.
 
-               Sorts the remaining entries using natural sorting.
-               """
+        Sorts the remaining entries using natural sorting.
+        """
         # Create a list of keys to remove to avoid modifying the dictionary while iterating
         keys_to_remove = []
 
