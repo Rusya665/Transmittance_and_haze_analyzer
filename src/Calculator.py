@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from datetime import date
 
@@ -37,7 +39,8 @@ class ProcessSpectroscopyData:
             t2 = np.concatenate([df.iloc[:, 1:].values for df in t2_data_frames], axis=1)
             t4 = np.concatenate([df.iloc[:, 1:].values for df in t4_data_frames], axis=1)
             # Perform calculations
-            self.calculate_metrics(measurements_t1, t2, measurements_t3, t4, sample_name, len(paths['t2']))
+            self.calculate_metrics(measurements_t1, t2, measurements_t3, t4, sample_name, len(paths['t2']),
+                                   1)
 
             # Save results
             if self.parent.save_images_flag:
@@ -46,7 +49,7 @@ class ProcessSpectroscopyData:
                 self.save_results_xlsx(sample_name)
 
     def calculate_metrics(self, t1: ndarray, t2: ndarray, t3: ndarray, t4: ndarray,
-                          sample_name: str, num_measurement_areas: int) -> None:
+                          sample_name: str, num_measurement_areas: int, threshold: int | float = None) -> None:
         """
         Calculate metrics for transmittance (T) and haze.
 
@@ -56,6 +59,7 @@ class ProcessSpectroscopyData:
         :param t4: ndarray: Haze measurements of the sample.
         :param sample_name: str: Name of the currently proceeding sample.
         :param num_measurement_areas: int: Number of areas measured for the same sample.
+        :param threshold: float: Threshold value for average T2 below which haze is considered meaningless.
         :return: None
 
         The transmittance metrics are calculated as follows:
@@ -64,7 +68,7 @@ class ProcessSpectroscopyData:
         - Transmittance Standard Deviation (Transmittance_Std_Dev):
             standard deviation of t2 values
 
-        The haze metrics for each measurement area are calculated using:
+        The haze metrics for each measurement area are calculated using (ASTM-D1003-21):
         Haze = 100 * ((t4 / t2) - (t3 / t1))
 
         After obtaining haze calculations for each area, the following aggregate metrics are computed:
@@ -84,11 +88,22 @@ class ProcessSpectroscopyData:
         # transmittance_std_dev_per_area = np.std(t2, axis=1)
 
         # Iterate through each measurement area and calculate haze
+        # ASTM-D1003-21
         haze_calculations_per_area = [100 * (t4[:, area_index] / t2[:, area_index] - t3 / t1) for area_index in
                                       range(num_measurement_areas)]
+        # ISO-14782-1999
+        # haze_calculations_per_area = [abs(100 * (t4[:, area_index] / t2[:, area_index] - (t3 * t2[:, area_index]) /
+        # t1)) for area_index in range(num_measurement_areas)]
+
         # Calculate average, variance, and standard deviation for haze across all areas
         aggregate_haze_avg = np.average(np.vstack(haze_calculations_per_area), axis=0)
         aggregate_haze_std_dev = np.std(np.vstack(haze_calculations_per_area), axis=0)
+
+        # Apply a threshold to haze values
+        # This is a very bad approach. Change it
+        if threshold:
+            aggregate_haze_avg[transmittance_avg_per_area < threshold] = np.nan
+            aggregate_haze_std_dev[transmittance_avg_per_area < threshold] = np.nan
 
         # Store the results in the class data attribute
         self.data[sample_name]['Transmittance_Avg'] = transmittance_avg_per_area
