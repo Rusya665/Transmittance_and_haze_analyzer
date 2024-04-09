@@ -39,8 +39,7 @@ class ProcessSpectroscopyData:
             t2 = np.concatenate([df.iloc[:, 1:].values for df in t2_data_frames], axis=1)
             t4 = np.concatenate([df.iloc[:, 1:].values for df in t4_data_frames], axis=1)
             # Perform calculations
-            self.calculate_metrics(measurements_t1, t2, measurements_t3, t4, sample_name, len(paths['t2']),
-                                   1)
+            self.calculate_metrics(measurements_t1, t2, measurements_t3, t4, sample_name, len(paths['t2']))
 
             # Save results
             if self.parent.save_images_flag:
@@ -89,6 +88,8 @@ class ProcessSpectroscopyData:
 
         # Iterate through each measurement area and calculate haze
         # ASTM-D1003-21
+        # haze_calculations_per_area = [100 * (t4[:, area_index] / t2[:, area_index] - t3 / t1) for area_index in
+        #                               range(num_measurement_areas)]
         haze_calculations_per_area = [100 * (t4[:, area_index] / t2[:, area_index] - t3 / t1) for area_index in
                                       range(num_measurement_areas)]
         # ISO-14782-1999
