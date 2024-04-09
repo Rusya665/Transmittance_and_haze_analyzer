@@ -60,7 +60,7 @@ class ControlPanel(ctk.CTkToplevel):
             line_width_entry.pack(side=tk.RIGHT, padx=5)
             color_button.pack(side=tk.RIGHT, padx=5)
 
-        self.control_frame = ctk.CTkFrame(self.main_scrollable_frame)
+        self.control_frame = ctk.CTkScrollableFrame(self.main_scrollable_frame, width=500)
         self.control_frame.grid(row=0, column=1, pady=10, padx=10, sticky="nsew")
 
         self.show_hide_frame = ctk.CTkFrame(self.main_scrollable_frame)
