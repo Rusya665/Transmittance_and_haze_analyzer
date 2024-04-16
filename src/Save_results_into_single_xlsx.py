@@ -27,14 +27,12 @@ class SaveIntoSingleExcel:
             # Adding metrics for each sample as new columns
             combined_df[f'{sample_name}_Transmittance_Avg'] = metrics['Transmittance_Avg']
             combined_df[f'{sample_name}_Transmittance_Std_Dev'] = metrics['Transmittance_Std_Dev']
+
+        for sample_name, metrics in self.data.items():
+            # Adding metrics for each sample as new columns
             combined_df[f'{sample_name}_Haze_Avg'] = metrics['Haze_Avg']
             combined_df[f'{sample_name}_Haze_Std_Dev'] = metrics['Haze_Std_Dev']
 
-        # Optionally add a row with sample names
-        if self.include_sample_names:
-            sample_names = [''] + [name for name in self.data.keys() for _ in range(4)]
-            sample_names_df = pd.DataFrame([sample_names], columns=combined_df.columns)
-            combined_df = pd.concat([sample_names_df, combined_df], ignore_index=True)
         # Save to Excel
         root_folder_path = self.parent.root_folder_path
         excel_file_path = os.path.join(root_folder_path, f'{date.today()}_combined_results.xlsx')

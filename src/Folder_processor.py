@@ -122,12 +122,12 @@ class InitialWindow(ctk.CTk):
                                                         command=lambda: self.flag_setter_checkboxes('Save_all'))
         self.save_all_in_one_checkbox.grid(row=10, column=0, pady=(0, 10), padx=5)
 
-        self.add_sample_name_row_checkbox = ctk.CTkCheckBox(self, text="Sample name row",
-                                                            command=lambda:
-                                                            self.flag_setter_checkboxes('Add_sample_name'))
-        self.add_sample_name_row_checkbox.grid(row=10, column=1, pady=(0, 10), padx=5)
-        self.add_sample_name_row_checkbox.toggle()
-        self.add_sample_name_row_checkbox.configure(state='disabled')
+        # self.add_sample_name_row_checkbox = ctk.CTkCheckBox(self, text="Sample name row",
+        #                                                     command=lambda:
+        #                                                     self.flag_setter_checkboxes('Add_sample_name'))
+        # self.add_sample_name_row_checkbox.grid(row=10, column=1, pady=(0, 10), padx=5)
+        # self.add_sample_name_row_checkbox.toggle()
+        # self.add_sample_name_row_checkbox.configure(state='disabled')
 
     @staticmethod
     def validate_numeric_entry(event):
@@ -288,6 +288,6 @@ class InitialWindow(ctk.CTk):
         if which_checkbox == 'Save_all':
             self.save_all_flag = bool(self.save_all_in_one_checkbox.get())
             state_xlsx = 'normal' if self.save_all_flag else 'disabled'
-            self.add_sample_name_row_checkbox.configure(state=state_xlsx)
-        if which_checkbox == 'Add_sample_name':
-            self.add_sample_name_row_flag = bool(self.add_sample_name_row_checkbox.get())
+            # self.add_sample_name_row_checkbox.configure(state=state_xlsx)
+        # if which_checkbox == 'Add_sample_name':
+        #     self.add_sample_name_row_flag = bool(self.add_sample_name_row_checkbox.get())
